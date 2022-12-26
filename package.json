@@ -1,0 +1,14 @@
+{
+  "name": "flight-surety",
+  "version": "1.0.0",
+  "description": "Flight delay insure for passengers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juan Ignacio Benito",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0"
+  }
+}
