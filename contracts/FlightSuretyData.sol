@@ -97,7 +97,7 @@ contract FlightSuretyData {
                             (   
                             )
                             external
-                            returns(bool success, uint256 votes);
+                            returns(bool success, uint256 votes)
     {
     }
 

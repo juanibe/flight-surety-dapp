@@ -308,17 +308,11 @@ contract FlightSuretyApp {
     We add a reference to the Data Contract. For this we create an interface.
     We are telling the app contract how to interact with the data contract
  */
-contract FlightSuretyData {
+abstract contract FlightSuretyData {
     function registerAirline
                             (   
                             )
                             external
+                            virtual
                             returns(bool success, uint256 votes);
 }
-
-// interface IFlightSuretyData {
-//         function registerAirline
-//                             (   
-//                             )
-//                             external;
-// }

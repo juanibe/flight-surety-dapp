@@ -1,0 +1,1079 @@
+{
+  "contractName": "FlightSuretyData",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "registerAirline",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "votes",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"registerAirline\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"success\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"votes\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"Constructor      The deploying account becomes contractOwner\"},\"registerAirline()\":{\"details\":\"Add an airline to the registration queue      Can only be called from FlightSuretyApp contract\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/FlightSuretyData.sol\":\"FlightSuretyData\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://864a40efcffdf408044c332a5aa38ec5618ed7b4eecb8f65faf45671bd6cdc65\",\"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN\"]},\"project:/contracts/FlightSuretyData.sol\":{\"keccak256\":\"0xcdb89b8ab65ad136194e4dbef3a9db9e0a35a21eaf28cad3b9d0dd1c2ee62ada\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b93a203255c8a06339459089663b88da772de580da83d4ef9772e925d989f2f9\",\"dweb:/ipfs/QmTVDpudTg8JpM5DrrJF2tVANFDm7RxFK2B7LY1tKMgSzM\"]}},\"version\":1}",
+  "bytecode": "0x60806040526001600060146101000a81548160ff02191690831515021790555034801561002b57600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555060d98061007a6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806363e29a3f14602d575b600080fd5b60336048565b604051603f929190607e565b60405180910390f35b60008091565b60008115159050919050565b606181604e565b82525050565b6000819050919050565b6078816067565b82525050565b600060408201905060916000830185605a565b609c60208301846071565b939250505056fea264697066735822122051f8ed0ca5c7697e4658f224193db690cc861f4b185b294aec1648f612ae1fc164736f6c634300080a0033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806363e29a3f14602d575b600080fd5b60336048565b604051603f929190607e565b60405180910390f35b60008091565b60008115159050919050565b606181604e565b82525050565b6000819050919050565b6078816067565b82525050565b600060408201905060916000830185605a565b609c60208301846071565b939250505056fea264697066735822122051f8ed0ca5c7697e4658f224193db690cc861f4b185b294aec1648f612ae1fc164736f6c634300080a0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [
+    {
+      "ast": {
+        "nodeType": "YulBlock",
+        "src": "0:748:2",
+        "statements": [
+          {
+            "body": {
+              "nodeType": "YulBlock",
+              "src": "49:48:2",
+              "statements": [
+                {
+                  "nodeType": "YulAssignment",
+                  "src": "59:32:2",
+                  "value": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "name": "value",
+                            "nodeType": "YulIdentifier",
+                            "src": "84:5:2"
+                          }
+                        ],
+                        "functionName": {
+                          "name": "iszero",
+                          "nodeType": "YulIdentifier",
+                          "src": "77:6:2"
+                        },
+                        "nodeType": "YulFunctionCall",
+                        "src": "77:13:2"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "iszero",
+                      "nodeType": "YulIdentifier",
+                      "src": "70:6:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "70:21:2"
+                  },
+                  "variableNames": [
+                    {
+                      "name": "cleaned",
+                      "nodeType": "YulIdentifier",
+                      "src": "59:7:2"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": "cleanup_t_bool",
+            "nodeType": "YulFunctionDefinition",
+            "parameters": [
+              {
+                "name": "value",
+                "nodeType": "YulTypedName",
+                "src": "31:5:2",
+                "type": ""
+              }
+            ],
+            "returnVariables": [
+              {
+                "name": "cleaned",
+                "nodeType": "YulTypedName",
+                "src": "41:7:2",
+                "type": ""
+              }
+            ],
+            "src": "7:90:2"
+          },
+          {
+            "body": {
+              "nodeType": "YulBlock",
+              "src": "162:50:2",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "name": "pos",
+                        "nodeType": "YulIdentifier",
+                        "src": "179:3:2"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "name": "value",
+                            "nodeType": "YulIdentifier",
+                            "src": "199:5:2"
+                          }
+                        ],
+                        "functionName": {
+                          "name": "cleanup_t_bool",
+                          "nodeType": "YulIdentifier",
+                          "src": "184:14:2"
+                        },
+                        "nodeType": "YulFunctionCall",
+                        "src": "184:21:2"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "mstore",
+                      "nodeType": "YulIdentifier",
+                      "src": "172:6:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "172:34:2"
+                  },
+                  "nodeType": "YulExpressionStatement",
+                  "src": "172:34:2"
+                }
+              ]
+            },
+            "name": "abi_encode_t_bool_to_t_bool_fromStack",
+            "nodeType": "YulFunctionDefinition",
+            "parameters": [
+              {
+                "name": "value",
+                "nodeType": "YulTypedName",
+                "src": "150:5:2",
+                "type": ""
+              },
+              {
+                "name": "pos",
+                "nodeType": "YulTypedName",
+                "src": "157:3:2",
+                "type": ""
+              }
+            ],
+            "src": "103:109:2"
+          },
+          {
+            "body": {
+              "nodeType": "YulBlock",
+              "src": "263:32:2",
+              "statements": [
+                {
+                  "nodeType": "YulAssignment",
+                  "src": "273:16:2",
+                  "value": {
+                    "name": "value",
+                    "nodeType": "YulIdentifier",
+                    "src": "284:5:2"
+                  },
+                  "variableNames": [
+                    {
+                      "name": "cleaned",
+                      "nodeType": "YulIdentifier",
+                      "src": "273:7:2"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": "cleanup_t_uint256",
+            "nodeType": "YulFunctionDefinition",
+            "parameters": [
+              {
+                "name": "value",
+                "nodeType": "YulTypedName",
+                "src": "245:5:2",
+                "type": ""
+              }
+            ],
+            "returnVariables": [
+              {
+                "name": "cleaned",
+                "nodeType": "YulTypedName",
+                "src": "255:7:2",
+                "type": ""
+              }
+            ],
+            "src": "218:77:2"
+          },
+          {
+            "body": {
+              "nodeType": "YulBlock",
+              "src": "366:53:2",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "name": "pos",
+                        "nodeType": "YulIdentifier",
+                        "src": "383:3:2"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "name": "value",
+                            "nodeType": "YulIdentifier",
+                            "src": "406:5:2"
+                          }
+                        ],
+                        "functionName": {
+                          "name": "cleanup_t_uint256",
+                          "nodeType": "YulIdentifier",
+                          "src": "388:17:2"
+                        },
+                        "nodeType": "YulFunctionCall",
+                        "src": "388:24:2"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "mstore",
+                      "nodeType": "YulIdentifier",
+                      "src": "376:6:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "376:37:2"
+                  },
+                  "nodeType": "YulExpressionStatement",
+                  "src": "376:37:2"
+                }
+              ]
+            },
+            "name": "abi_encode_t_uint256_to_t_uint256_fromStack",
+            "nodeType": "YulFunctionDefinition",
+            "parameters": [
+              {
+                "name": "value",
+                "nodeType": "YulTypedName",
+                "src": "354:5:2",
+                "type": ""
+              },
+              {
+                "name": "pos",
+                "nodeType": "YulTypedName",
+                "src": "361:3:2",
+                "type": ""
+              }
+            ],
+            "src": "301:118:2"
+          },
+          {
+            "body": {
+              "nodeType": "YulBlock",
+              "src": "545:200:2",
+              "statements": [
+                {
+                  "nodeType": "YulAssignment",
+                  "src": "555:26:2",
+                  "value": {
+                    "arguments": [
+                      {
+                        "name": "headStart",
+                        "nodeType": "YulIdentifier",
+                        "src": "567:9:2"
+                      },
+                      {
+                        "kind": "number",
+                        "nodeType": "YulLiteral",
+                        "src": "578:2:2",
+                        "type": "",
+                        "value": "64"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "add",
+                      "nodeType": "YulIdentifier",
+                      "src": "563:3:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "563:18:2"
+                  },
+                  "variableNames": [
+                    {
+                      "name": "tail",
+                      "nodeType": "YulIdentifier",
+                      "src": "555:4:2"
+                    }
+                  ]
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "name": "value0",
+                        "nodeType": "YulIdentifier",
+                        "src": "629:6:2"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "name": "headStart",
+                            "nodeType": "YulIdentifier",
+                            "src": "642:9:2"
+                          },
+                          {
+                            "kind": "number",
+                            "nodeType": "YulLiteral",
+                            "src": "653:1:2",
+                            "type": "",
+                            "value": "0"
+                          }
+                        ],
+                        "functionName": {
+                          "name": "add",
+                          "nodeType": "YulIdentifier",
+                          "src": "638:3:2"
+                        },
+                        "nodeType": "YulFunctionCall",
+                        "src": "638:17:2"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "abi_encode_t_bool_to_t_bool_fromStack",
+                      "nodeType": "YulIdentifier",
+                      "src": "591:37:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "591:65:2"
+                  },
+                  "nodeType": "YulExpressionStatement",
+                  "src": "591:65:2"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "name": "value1",
+                        "nodeType": "YulIdentifier",
+                        "src": "710:6:2"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "name": "headStart",
+                            "nodeType": "YulIdentifier",
+                            "src": "723:9:2"
+                          },
+                          {
+                            "kind": "number",
+                            "nodeType": "YulLiteral",
+                            "src": "734:2:2",
+                            "type": "",
+                            "value": "32"
+                          }
+                        ],
+                        "functionName": {
+                          "name": "add",
+                          "nodeType": "YulIdentifier",
+                          "src": "719:3:2"
+                        },
+                        "nodeType": "YulFunctionCall",
+                        "src": "719:18:2"
+                      }
+                    ],
+                    "functionName": {
+                      "name": "abi_encode_t_uint256_to_t_uint256_fromStack",
+                      "nodeType": "YulIdentifier",
+                      "src": "666:43:2"
+                    },
+                    "nodeType": "YulFunctionCall",
+                    "src": "666:72:2"
+                  },
+                  "nodeType": "YulExpressionStatement",
+                  "src": "666:72:2"
+                }
+              ]
+            },
+            "name": "abi_encode_tuple_t_bool_t_uint256__to_t_bool_t_uint256__fromStack_reversed",
+            "nodeType": "YulFunctionDefinition",
+            "parameters": [
+              {
+                "name": "headStart",
+                "nodeType": "YulTypedName",
+                "src": "509:9:2",
+                "type": ""
+              },
+              {
+                "name": "value1",
+                "nodeType": "YulTypedName",
+                "src": "521:6:2",
+                "type": ""
+              },
+              {
+                "name": "value0",
+                "nodeType": "YulTypedName",
+                "src": "529:6:2",
+                "type": ""
+              }
+            ],
+            "returnVariables": [
+              {
+                "name": "tail",
+                "nodeType": "YulTypedName",
+                "src": "540:4:2",
+                "type": ""
+              }
+            ],
+            "src": "425:320:2"
+          }
+        ]
+      },
+      "contents": "{\n\n    function cleanup_t_bool(value) -> cleaned {\n        cleaned := iszero(iszero(value))\n    }\n\n    function abi_encode_t_bool_to_t_bool_fromStack(value, pos) {\n        mstore(pos, cleanup_t_bool(value))\n    }\n\n    function cleanup_t_uint256(value) -> cleaned {\n        cleaned := value\n    }\n\n    function abi_encode_t_uint256_to_t_uint256_fromStack(value, pos) {\n        mstore(pos, cleanup_t_uint256(value))\n    }\n\n    function abi_encode_tuple_t_bool_t_uint256__to_t_bool_t_uint256__fromStack_reversed(headStart , value1, value0) -> tail {\n        tail := add(headStart, 64)\n\n        abi_encode_t_bool_to_t_bool_fromStack(value0,  add(headStart, 0))\n\n        abi_encode_t_uint256_to_t_uint256_fromStack(value1,  add(headStart, 32))\n\n    }\n\n}\n",
+      "id": 2,
+      "language": "Yul",
+      "name": "#utility.yul"
+    }
+  ],
+  "sourceMap": "125:5538:1:-:0;;;622:4;595:31;;;;;;;;;;;;;;;;;;;;1121:129;;;;;;;;;;1233:10;1217:13;;:26;;;;;;;;;;;;;;;;;;125:5538;;;;;;",
+  "deployedSourceMap": "125:5538:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3622:201;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;3783:12;3797:13;3622:201;:::o;7:90:2:-;41:7;84:5;77:13;70:21;59:32;;7:90;;;:::o;103:109::-;184:21;199:5;184:21;:::i;:::-;179:3;172:34;103:109;;:::o;218:77::-;255:7;284:5;273:16;;218:77;;;:::o;301:118::-;388:24;406:5;388:24;:::i;:::-;383:3;376:37;301:118;;:::o;425:320::-;540:4;578:2;567:9;563:18;555:26;;591:65;653:1;642:9;638:17;629:6;591:65;:::i;:::-;666:72;734:2;723:9;719:18;710:6;666:72;:::i;:::-;425:320;;;;;:::o",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\nimport \"@openzeppelin/contracts/utils/math/SafeMath.sol\";\n\ncontract FlightSuretyData {\n    using SafeMath for uint256;\n\n    /********************************************************************************************/\n    /*                                       DATA VARIABLES                                     */\n    /********************************************************************************************/\n\n    address private contractOwner;                                      // Account used to deploy contract\n    bool private operational = true;                                    // Blocks all state changes throughout the contract if false\n\n    /********************************************************************************************/\n    /*                                       EVENT DEFINITIONS                                  */\n    /********************************************************************************************/\n\n\n    /**\n    * @dev Constructor\n    *      The deploying account becomes contractOwner\n    */\n    constructor\n                                (\n                                )  \n    {\n        contractOwner = msg.sender;\n    }\n\n    /********************************************************************************************/\n    /*                                       FUNCTION MODIFIERS                                 */\n    /********************************************************************************************/\n\n    // Modifiers help avoid duplication of code. They are typically used to validate something\n    // before a function is allowed to be executed.\n\n    /**\n    * @dev Modifier that requires the \"operational\" boolean variable to be \"true\"\n    *      This is used on all state changing functions to pause the contract in \n    *      the event there is an issue that needs to be fixed\n    */\n    modifier requireIsOperational() \n    {\n        require(operational, \"Contract is currently not operational\");\n        _;  // All modifiers require an \"_\" which indicates where the function body will be added\n    }\n\n    /**\n    * @dev Modifier that requires the \"ContractOwner\" account to be the function caller\n    */\n    modifier requireContractOwner()\n    {\n        require(msg.sender == contractOwner, \"Caller is not contract owner\");\n        _;\n    }\n\n    /********************************************************************************************/\n    /*                                       UTILITY FUNCTIONS                                  */\n    /********************************************************************************************/\n\n    /**\n    * @dev Get operating status of contract\n    *\n    * @return A bool that is the current operating status\n    */      \n    // function isOperational() \n    //                         public \n    //                         view \n    //                         returns(bool) \n    // {\n    //     return operational;\n    // }\n\n    /**\n    * @dev Sets contract operations on/off\n    *\n    * When operational mode is disabled, all write transactions except for this one will fail\n    */    \n    // function setOperatingStatus\n    //                         (\n    //                             bool mode\n    //                         ) \n    //                         external\n    //                         requireContractOwner \n    // {\n    //     operational = mode;\n    // }\n\n   /**\n    * @dev Add an airline to the registration queue\n    *      Can only be called from FlightSuretyApp contract\n    *\n    */   \n    function registerAirline\n                            (   \n                            )\n                            external\n                            returns(bool success, uint256 votes)\n    {\n    }\n\n   /**\n    * @dev Buy insurance for a flight\n    *\n    */   \n    // function buy\n    //                         (                             \n    //                         )\n    //                         external\n    //                         payable\n    // {\n\n    // }\n\n\n    /**\n     *  @dev Credits payouts to insurees\n    */\n    // function creditInsurees\n    //                             (\n    //                             )\n    //                             external\n    //                             pure\n    // {\n    // }\n\n    /**\n     *  @dev Transfers eligible payout funds to insuree\n     *\n    */\n    // function pay\n    //                         (\n    //                         )\n    //                         external\n    //                         pure\n    // {\n    // }\n\n   /**\n    * @dev Initial funding for the insurance. Unless there are too many delayed flights\n    *      resulting in insurance payouts, the contract should be self-sustaining\n    *\n    */   \n    // function fund\n    //                         (   \n    //                         )\n    //                         public\n    //                         payable\n    // {\n    // }\n\n    // function getFlightKey\n    //                     (\n    //                         address airline,\n    //                         string memory flight,\n    //                         uint256 timestamp\n    //                     )\n    //                     pure\n    //                     internal\n    //                     returns(bytes32) \n    // {\n    //     return keccak256(abi.encodePacked(airline, flight, timestamp));\n    // }\n\n    /**\n    * @dev Fallback function for funding smart contract.\n    *\n    */\n    // fallback() \n    //                         external \n    //                         payable \n    // {\n    //     fund();\n    // }\n}",
+  "sourcePath": "/Users/juani/code/courses/udacity_blockchain_developer/flight-surety/contracts/FlightSuretyData.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/FlightSuretyData.sol",
+    "exportedSymbols": {
+      "FlightSuretyData": [
+        365
+      ],
+      "SafeMath": [
+        311
+      ]
+    },
+    "id": 366,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 313,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:1"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/utils/math/SafeMath.sol",
+        "file": "@openzeppelin/contracts/utils/math/SafeMath.sol",
+        "id": 314,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 366,
+        "sourceUnit": 312,
+        "src": "66:57:1",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "FlightSuretyData",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 365,
+        "linearizedBaseContracts": [
+          365
+        ],
+        "name": "FlightSuretyData",
+        "nameLocation": "134:16:1",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "id": 317,
+            "libraryName": {
+              "id": 315,
+              "name": "SafeMath",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 311,
+              "src": "163:8:1"
+            },
+            "nodeType": "UsingForDirective",
+            "src": "157:27:1",
+            "typeName": {
+              "id": 316,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "176:7:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 319,
+            "mutability": "mutable",
+            "name": "contractOwner",
+            "nameLocation": "504:13:1",
+            "nodeType": "VariableDeclaration",
+            "scope": 365,
+            "src": "488:29:1",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 318,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "488:7:1",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "constant": false,
+            "id": 322,
+            "mutability": "mutable",
+            "name": "operational",
+            "nameLocation": "608:11:1",
+            "nodeType": "VariableDeclaration",
+            "scope": 365,
+            "src": "595:31:1",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 320,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "595:4:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": {
+              "hexValue": "74727565",
+              "id": 321,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "bool",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "622:4:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              },
+              "value": "true"
+            },
+            "visibility": "private"
+          },
+          {
+            "body": {
+              "id": 331,
+              "nodeType": "Block",
+              "src": "1207:43:1",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 329,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 326,
+                      "name": "contractOwner",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 319,
+                      "src": "1217:13:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "expression": {
+                        "id": 327,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4294967281,
+                        "src": "1233:3:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 328,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "src": "1233:10:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "1217:26:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 330,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1217:26:1"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 323,
+              "nodeType": "StructuredDocumentation",
+              "src": "1028:88:1",
+              "text": " @dev Constructor\n      The deploying account becomes contractOwner"
+            },
+            "id": 332,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 324,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1165:35:1"
+            },
+            "returnParameters": {
+              "id": 325,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1207:0:1"
+            },
+            "scope": 365,
+            "src": "1121:129:1",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 341,
+              "nodeType": "Block",
+              "src": "1980:176:1",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 336,
+                        "name": "operational",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 322,
+                        "src": "1998:11:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "436f6e74726163742069732063757272656e746c79206e6f74206f7065726174696f6e616c",
+                        "id": 337,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2011:39:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_a944ac63656791076c14949470b85bdffa60627db8794c94b1d70a12e2e21886",
+                          "typeString": "literal_string \"Contract is currently not operational\""
+                        },
+                        "value": "Contract is currently not operational"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_a944ac63656791076c14949470b85bdffa60627db8794c94b1d70a12e2e21886",
+                          "typeString": "literal_string \"Contract is currently not operational\""
+                        }
+                      ],
+                      "id": 335,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "1990:7:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 338,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1990:61:1",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 339,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1990:61:1"
+                },
+                {
+                  "id": 340,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "2061:1:1"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 333,
+              "nodeType": "StructuredDocumentation",
+              "src": "1702:236:1",
+              "text": " @dev Modifier that requires the \"operational\" boolean variable to be \"true\"\n      This is used on all state changing functions to pause the contract in \n      the event there is an issue that needs to be fixed"
+            },
+            "id": 342,
+            "name": "requireIsOperational",
+            "nameLocation": "1952:20:1",
+            "nodeType": "ModifierDefinition",
+            "parameters": {
+              "id": 334,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1972:2:1"
+            },
+            "src": "1943:213:1",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 354,
+              "nodeType": "Block",
+              "src": "2301:96:1",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 349,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "expression": {
+                            "id": 346,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 4294967281,
+                            "src": "2319:3:1",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 347,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "src": "2319:10:1",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "id": 348,
+                          "name": "contractOwner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 319,
+                          "src": "2333:13:1",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "2319:27:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "43616c6c6572206973206e6f7420636f6e7472616374206f776e6572",
+                        "id": 350,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2348:30:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_ad5b8255218fc9200bf271049bc5472a1a7a8192290eba60272e432e608ceea3",
+                          "typeString": "literal_string \"Caller is not contract owner\""
+                        },
+                        "value": "Caller is not contract owner"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_ad5b8255218fc9200bf271049bc5472a1a7a8192290eba60272e432e608ceea3",
+                          "typeString": "literal_string \"Caller is not contract owner\""
+                        }
+                      ],
+                      "id": 345,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "2311:7:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 351,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2311:68:1",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 352,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2311:68:1"
+                },
+                {
+                  "id": 353,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "2389:1:1"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 343,
+              "nodeType": "StructuredDocumentation",
+              "src": "2162:98:1",
+              "text": " @dev Modifier that requires the \"ContractOwner\" account to be the function caller"
+            },
+            "id": 355,
+            "name": "requireContractOwner",
+            "nameLocation": "2274:20:1",
+            "nodeType": "ModifierDefinition",
+            "parameters": {
+              "id": 344,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2294:2:1"
+            },
+            "src": "2265:132:1",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 363,
+              "nodeType": "Block",
+              "src": "3816:7:1",
+              "statements": []
+            },
+            "documentation": {
+              "id": 356,
+              "nodeType": "StructuredDocumentation",
+              "src": "3486:128:1",
+              "text": " @dev Add an airline to the registration queue\n      Can only be called from FlightSuretyApp contract"
+            },
+            "functionSelector": "63e29a3f",
+            "id": 364,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerAirline",
+            "nameLocation": "3631:15:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 357,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3675:34:1"
+            },
+            "returnParameters": {
+              "id": 362,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 359,
+                  "mutability": "mutable",
+                  "name": "success",
+                  "nameLocation": "3788:7:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 364,
+                  "src": "3783:12:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 358,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3783:4:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 361,
+                  "mutability": "mutable",
+                  "name": "votes",
+                  "nameLocation": "3805:5:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 364,
+                  "src": "3797:13:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 360,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3797:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3782:29:1"
+            },
+            "scope": 365,
+            "src": "3622:201:1",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 366,
+        "src": "125:5538:1",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:5631:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.10+commit.fc410830.Emscripten.clang"
+  },
+  "networks": {
+    "1672091488826": {
+      "events": {},
+      "links": {},
+      "address": "0x9CEC13aC017997Cf4A0b045F884d42bEaa40f297",
+      "transactionHash": "0x4fc5b6bf08fcde0e7f6e552567d637354f9046f6b9e1021298586ae2177b125d"
+    }
+  },
+  "schemaVersion": "3.4.11",
+  "updatedAt": "2022-12-27T02:04:09.002Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "details": "Constructor      The deploying account becomes contractOwner"
+      },
+      "registerAirline()": {
+        "details": "Add an airline to the registration queue      Can only be called from FlightSuretyApp contract"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
