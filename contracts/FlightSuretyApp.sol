@@ -74,7 +74,7 @@ contract FlightSuretyApp {
     * @dev Contract constructor
     *
     */
-    constructor(address dataContract) 
+    constructor(address dataContract)
     {
         contractOwner = msg.sender;
         flightSuretyData = FlightSuretyData(dataContract);

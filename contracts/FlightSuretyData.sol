@@ -13,10 +13,29 @@ contract FlightSuretyData {
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
 
+    address[] multiCalls = new address[](0);
+
+    struct Airline {
+        bool isRegistered;
+        bool isOperational;
+    }
+
+    struct AirlineRegistrationRequest {
+        string name;
+        address airlineAddress;
+    }
+
+    mapping(address => uint256) private authorizedCaller;
+
+    mapping(address => Airline) airlines;
+
+
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
 
+    event AuthorizedContract(address authContract);
+    event DeAuthorizedContract(address authContract);
 
     /**
     * @dev Constructor
@@ -24,9 +43,17 @@ contract FlightSuretyData {
     */
     constructor
                                 (
+                                    
                                 )  
     {
         contractOwner = msg.sender;
+        
+        airlines[msg.sender] = Airline({
+            isRegistered: true,
+            isOperational: false
+        }); 
+
+        multiCalls.push(msg.sender);
     }
 
     /********************************************************************************************/
@@ -56,6 +83,12 @@ contract FlightSuretyData {
         _;
     }
 
+    modifier isCallerAuthorized()
+    {
+        require(authorizedCaller[msg.sender] == 1, "Caller is not authorized");
+        _;
+    }
+
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
@@ -65,28 +98,48 @@ contract FlightSuretyData {
     *
     * @return A bool that is the current operating status
     */      
-    // function isOperational() 
-    //                         public 
-    //                         view 
-    //                         returns(bool) 
-    // {
-    //     return operational;
-    // }
+    function isOperational() 
+                            public 
+                            view 
+                            returns(bool) 
+    {
+        return operational;
+    }
 
     /**
     * @dev Sets contract operations on/off
     *
     * When operational mode is disabled, all write transactions except for this one will fail
     */    
-    // function setOperatingStatus
-    //                         (
-    //                             bool mode
-    //                         ) 
-    //                         external
-    //                         requireContractOwner 
-    // {
-    //     operational = mode;
-    // }
+    function setOperatingStatus
+                            (
+                                bool mode
+                            ) 
+                            external
+                            requireContractOwner 
+    {
+        operational = mode;
+    }
+    
+
+    function authorizeCaller(address contractAddress) external
+        requireContractOwner
+    {
+        authorizedCaller[contractAddress] = 1;
+        emit AuthorizedContract(contractAddress);
+    }
+
+
+    function deauthorizeContract(address contractAddress) external
+        requireContractOwner
+    {
+        delete authorizedCaller[contractAddress];
+        emit DeAuthorizedContract(contractAddress);
+    } 
+
+    /********************************************************************************************/
+    /*                                     SMART CONTRACT FUNCTIONS                             */
+    /********************************************************************************************/
 
    /**
     * @dev Add an airline to the registration queue
@@ -94,11 +147,14 @@ contract FlightSuretyData {
     *
     */   
     function registerAirline
-                            (   
+                            (
+                                address _airlineAddress,
+                                string memory _name   
                             )
                             external
-                            returns(bool success, uint256 votes)
+                            returns(bool success)
     {
+      
     }
 
    /**
