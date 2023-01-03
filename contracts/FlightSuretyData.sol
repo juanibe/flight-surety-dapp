@@ -16,8 +16,8 @@ contract FlightSuretyData {
     address[] multiCalls = new address[](0);
 
     struct Airline {
-        bool isRegistered;
-        bool isOperational;
+        bool registered;
+        bool operational;
     }
 
     struct AirlineRegistrationRequest {
@@ -49,8 +49,8 @@ contract FlightSuretyData {
         contractOwner = msg.sender;
         
         airlines[msg.sender] = Airline({
-            isRegistered: true,
-            isOperational: false
+            registered: true,
+            operational: false
         }); 
 
         multiCalls.push(msg.sender);
@@ -148,13 +148,17 @@ contract FlightSuretyData {
     */   
     function registerAirline
                             (
-                                address _airlineAddress,
-                                string memory _name   
+                                address airlineAddress,
+                                bool fundComplete   
                             )
                             external
-                            returns(bool success)
     {
-      
+        airlines[airlineAddress] = Airline({
+            registered: true,
+            operational: fundComplete
+        });
+
+        multiCalls.push(airlineAddress);
     }
 
    /**

@@ -51,7 +51,7 @@ contract FlightSuretyApp {
     modifier requireIsOperational()
     {
         // Modify to call data contract's status
-        require(true, "Contract is currently not opperational");
+        require(flightSuretyData.isOperational(), "Contract is currently not operational");  
 
         // All modifiers require an "_" which indicates where the function body will be added
         _;
@@ -105,6 +105,7 @@ contract FlightSuretyApp {
                             (   
                             )
                             external
+                            requireIsOperational
                             returns(bool success, uint256 votes)
     {
        flightSuretyData.registerAirline();
@@ -309,6 +310,14 @@ contract FlightSuretyApp {
     We are telling the app contract how to interact with the data contract
  */
 abstract contract FlightSuretyData {
+    function isOperational
+                            (
+                            ) 
+                            public 
+                            view 
+                            virtual 
+                            returns(bool);
+
     function registerAirline
                             (   
                             )
