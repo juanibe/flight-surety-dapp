@@ -26,7 +26,12 @@ contract FlightSuretyApp {
     // Account used to deploy contract
     address private contractOwner; 
 
+    /* Number of airlines already registered until needed to vote for a new one */
+    uint8 threshold = 5;
+    
     FlightSuretyData flightSuretyData;
+
+    uint256 public constant RegistrationFee = 10 ether;
 
     struct Flight {
         bool isRegistered;
@@ -58,6 +63,25 @@ contract FlightSuretyApp {
     }
 
     /**
+    * @dev Modifier that requires that what is being paid is enough
+    */
+    modifier paidEnough(uint256 _value)
+    {
+        require(msg.value >= _value, 'Payment is insuficient');
+        _;
+    }
+
+    /**
+    * @dev Modifier that validates the payment, returning if there are remaining funds
+    */
+    modifier checkPayment(uint256 _value, address payable account)
+    {
+        uint256 spare = msg.value - _value;
+        account.transfer(spare);
+        _;
+    }
+
+    /**
     * @dev Modifier that requires the "ContractOwner" account to be the function caller
     */
     modifier requireContractOwner()
@@ -84,33 +108,125 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function isOperational() 
+    function isOperational  
+                            () 
                             public 
-                            pure 
+                            view 
                             returns(bool) 
     {
-        return true;  // Modify to call data contract's status
+        return flightSuretyData.isOperational();
     }
+
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
-  
+    function getAirlineRegistrationStatus
+                                        (
+                                            address airline
+                                        )
+                                        public
+                                        view
+                                        returns(bool)
+    {
+        return flightSuretyData.getAirlineRegistrationStatus(airline);
+    }
+
+    function getAirlineOperationalStatus
+                                        (
+                                            address airline
+                                        )
+                                        public
+                                        view
+                                        returns(bool)
+    {
+        return flightSuretyData.getAirlineOperationalStatus(airline);
+    }
+    
+    function getRegisteredAirlines
+                                    ()
+                                    public
+                                    view
+                                    returns(uint256)
+    {
+        return flightSuretyData.getRegisteredAirlines();
+    }
+
+   /**
+    * @dev Get the addresses of all the registered airlines
+    *
+    */   
+    function getRegisteredAirlinesAccounts
+                                        ()
+                                        public
+                                        view
+                                        requireIsOperational
+    {
+        flightSuretyData.getRegisteredAirlinesAccounts();
+    }
+
    /**
     * @dev Add an airline to the registration queue
     *
     */   
     function registerAirline
-                            (   
+                            (
+                                address airline   
                             )
                             external
                             requireIsOperational
-                            returns(bool success, uint256 votes)
     {
-       flightSuretyData.registerAirline();
-       return (true, 1);
+        /* Validations */
+        require(airline != address(0), "InvalidAccountAddress");
+        // require(flightSuretyData.getAirlineOperationalStatus(msg.sender), "AirlineHasNotBeenFunded");
+        require(!flightSuretyData.getAirlineOperationalStatus(msg.sender), "AirlineAddressAlreadyRegistered");
+
+        uint registeredAccounts = flightSuretyData.getRegisteredAirlines();
+
+        if(registeredAccounts < threshold)
+        {
+            flightSuretyData.registerAirline(airline, false);
+        }
+        else
+        {
+            emit VoteRequestEvent(airline);
+        }
     }
+
+   /**
+    * @dev This method gives a vote to an applicant airline, when the total airlines registered 
+    *      are more than 5. 
+    */
+    function voteAirline
+                        ()
+                        public
+                        requireIsOperational
+    {
+
+    }
+
+   /**
+    * @dev When writing a smart contract, you need to ensure that money is being sent to the contract and out of the contract as well. Payable does this for you, any function in Solidity with the modifier Payable ensures that the function can send and receive Ether
+    *
+    */
+    function fund
+                ()
+                public
+                payable
+                requireIsOperational
+                paidEnough(RegistrationFee)
+                checkPayment(RegistrationFee, payable(msg.sender))
+    {
+
+        /* Validate that the ariline is already registered */
+        require(flightSuretyData.getAirlineRegistrationStatus(msg.sender), 'Airline is not registered');
+
+        /* Validate that the airline has not been already paid the funding */
+        require(!flightSuretyData.getAirlineOperationalStatus(msg.sender), 'Airline was already funded');
+
+        flightSuretyData.fund{value:RegistrationFee}(msg.sender);
+    }      
 
    /**
     * @dev Register a future flight for insuring.
@@ -118,11 +234,22 @@ contract FlightSuretyApp {
     */  
     function registerFlight
                                 (
+                                    string memory flightNumber,
+                                    uint256 timestamp
                                 )
                                 external
-                                pure
     {
+        /* Validate airline operational status */
+        require(flightSuretyData.getAirlineOperationalStatus(msg.sender));
+        
+        /* Validate that the flight has not been already registered */
+        require(!flightSuretyData.getFlightStatus(
+            msg.sender, flightNumber, timestamp), 
+            "This flight has already been registered"
+        );
 
+        /* Register the new flight */
+        flightSuretyData.registerFlight(msg.sender, flightNumber, timestamp);
     }
 
    /**
@@ -172,6 +299,9 @@ contract FlightSuretyApp {
     // Track all oracle responses
     // Key = hash(index, flight, timestamp)
     mapping(bytes32 => ResponseInfo) private oracleResponses;
+
+    /* Event triggered when a new airlines registers and needs votation to be authorized to enter */
+    event VoteRequestEvent(address airline);
 
     // Event fired each time an oracle submits a response
     event FlightStatusInfo(address airline, string flight, uint256 timestamp, uint8 status);
@@ -310,18 +440,15 @@ contract FlightSuretyApp {
     We are telling the app contract how to interact with the data contract
  */
 abstract contract FlightSuretyData {
-    function isOperational
-                            (
-                            ) 
-                            public 
-                            view 
-                            virtual 
-                            returns(bool);
+    function isOperational() public view virtual returns(bool);
 
-    function registerAirline
-                            (   
-                            )
-                            external
-                            virtual
-                            returns(bool success, uint256 votes);
+    function registerAirline(address airline, bool fundComplete) external virtual;
+    function getAirlineOperationalStatus(address airlineAddress) external view virtual returns(bool);
+    function getAirlineRegistrationStatus(address airlineAddress) external view virtual returns(bool);
+    function getRegisteredAirlines() external view virtual returns(uint256);
+    function getRegisteredAirlinesAccounts() external view virtual returns(address [] memory);
+    function fund(address account) external virtual payable;
+
+    function getFlightStatus(address airline, string memory flightNumber, uint256 timestamp) external virtual view returns(bool);
+    function registerFlight(address airline, string memory flight, uint256 timestamp) external virtual;
 }

@@ -25,9 +25,26 @@ contract FlightSuretyData {
         address airlineAddress;
     }
 
-    mapping(address => uint256) private authorizedCaller;
+    struct flightInfo{
+        bool isRegistered; 
+        uint256 totalPremium;
+        uint256 statusCode;
+    }
 
+    struct insureeInfo{
+        uint256 insuranceAmount;
+        uint256 payout;
+    }
+
+    mapping(address => uint256) private authorizedCaller;
+    
+    mapping(address => bytes32 []) flightList; 
+    mapping(address => mapping(bytes32 => flightInfo)) flights;
     mapping(address => Airline) airlines;
+    mapping(address => uint256) funding;
+
+    mapping(address => mapping(bytes32 => address [])) insureeList;   //store the passenger addresses for each flight
+    mapping(address => mapping(bytes32 => mapping(address => insureeInfo))) insurees;    //For each flight, it keeps track of premium and payout for each insuree
 
 
     /********************************************************************************************/
@@ -42,8 +59,7 @@ contract FlightSuretyData {
     *      The deploying account becomes contractOwner
     */
     constructor
-                                (
-                                    
+                                (                                    
                                 )  
     {
         contractOwner = msg.sender;
@@ -120,7 +136,6 @@ contract FlightSuretyData {
     {
         operational = mode;
     }
-    
 
     function authorizeCaller(address contractAddress) external
         requireContractOwner
@@ -140,6 +155,87 @@ contract FlightSuretyData {
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
+
+   /**
+    * @dev 
+    *      
+    *
+    */
+    function getRegisteredAirlines
+                                ()
+                                external
+                                view
+                                requireIsOperational
+                                isCallerAuthorized
+                                returns(uint256)
+    {
+        return multiCalls.length;
+    }
+
+    /**
+    * @dev 
+    *      
+    *
+    */
+    function getRegisteredAirlinesAccounts
+                                        ()
+                                        external
+                                        view
+                                        requireIsOperational
+                                        isCallerAuthorized
+                                        returns(address[] memory)
+    {
+        return multiCalls;
+    }
+
+
+    /**
+     * @dev Returns if the airline is registered or not by the address
+     * @return bool 
+     */
+    function getAirlineRegistrationStatus
+                                         (   
+                                            address airlineAddress
+                                         )
+                                         external
+                                         view
+                                         requireIsOperational
+                                         isCallerAuthorized
+                                         returns(bool)
+    {
+        return airlines[airlineAddress].registered;
+    }
+
+    /**
+     * @dev Returns if the airline is funded or not by the address
+     * @return bool 
+     */
+     function getAirlineOperationalStatus
+                                        (
+                                            address airlineAddress
+                                        )
+                                        external
+                                        view
+                                        requireIsOperational
+                                        isCallerAuthorized
+                                        returns(bool)
+    {
+        return airlines[airlineAddress].operational;
+    }
+
+    /**
+     * @dev Sets the operational status to the airline, either to true or false
+     */
+     function setAirlineOperationalStatus
+                                        (
+                                            address airlineAddress,
+                                            bool status
+                                        )
+                                        private
+                                        requireIsOperational
+    {
+        airlines[airlineAddress].operational = status;
+    }
 
    /**
     * @dev Add an airline to the registration queue
@@ -162,17 +258,158 @@ contract FlightSuretyData {
     }
 
    /**
+    * @dev Initial funding for the insurance. Unless there are too many delayed flights
+    *      resulting in insurance payouts, the contract should be self-sustaining
+    *
+    */  
+    function fund
+                (
+                    address account     
+                )
+                payable
+                public
+                requireIsOperational
+                isCallerAuthorized
+    {
+        funding[account] = msg.value;
+        setAirlineOperationalStatus(account, true);
+    }
+
+   /**
+    * @dev Add a flight to the airline
+    *      
+    *
+    */
+    function registerFlight
+                            (
+                                address airlineAddress,
+                                string memory flight,
+                                uint256 timestamp
+                            )
+                            requireIsOperational
+                            isCallerAuthorized
+                            external
+    {
+        bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
+        flightList[airlineAddress].push(key);
+        flights[airlineAddress][key].isRegistered = true;
+        flights[airlineAddress][key].totalPremium = 0;
+        flights[airlineAddress][key].statusCode = 0;
+    }
+
+   /**
+    * @dev Gets the state of a filight, either if it is 
+    *      registered or not.
+    *        
+    *    
+    */
+    function getFlightStatus
+                            (
+                                address airline,
+                                string memory flightNumber,
+                                uint256 timestamp
+                            )
+                            external
+                            view
+                            requireIsOperational
+                            isCallerAuthorized
+                            returns(bool)
+    {
+        bytes32 key = keccak256(abi.encodePacked(flightNumber, timestamp));
+        bool result = flights[airline][key].isRegistered;
+        return result;
+    }
+
+   /**
+    * @dev 
+    *        
+    *    
+    */
+    function setFlightStatusCode
+                                (
+                                    address airline,
+                                    string memory flight,
+                                    uint256 timestamp,
+                                    uint256 code
+                                )
+                                external
+                                requireIsOperational
+                                isCallerAuthorized
+    {
+        bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
+        flights[airline][key].statusCode = code;
+    }
+
+
+   /**
+    * @dev 
+    *        
+    *    
+    */
+    function getFlightStatusCode
+                                (
+                                    address airline,
+                                    string memory flight,
+                                    uint256 timestamp
+                                )
+                                external
+                                view
+                                requireIsOperational
+                                isCallerAuthorized
+                                returns(uint256)
+    {
+        bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
+        uint statusCode = flights[airline][key].statusCode;
+        return statusCode;
+    }
+
+                            
+
+
+   /**
     * @dev Buy insurance for a flight
+    *      Increment premiums: Premiums are the amount you pay for your insurance every month
     *
     */   
-    // function buy
-    //                         (                             
-    //                         )
-    //                         external
-    //                         payable
-    // {
+    function buy
+                            (
+                                address airline,
+                                string memory flight,
+                                address insuree,
+                                uint256 amount,
+                                uint256 timestamp                             
+                            )
+                            external
+                            payable
+                            requireIsOperational
+                            isCallerAuthorized
+    {
+        bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
+        flights[airline][key].totalPremium = flights[airline][key].totalPremium.add(amount);
+        insureeList[airline][key].push(insuree);
+        insurees[airline][key][insuree] = insureeInfo({ insuranceAmount: amount, payout: 0 }); 
+    }
 
-    // }
+   /**
+    * @dev 
+    *      
+    *
+    */   
+    function getFlightPremium
+                            (
+                                address airline,
+                                string memory flight,
+                                uint256 timestamp
+                            )
+                            external
+                            view
+                            requireIsOperational
+                            isCallerAuthorized
+                            returns(uint256)
+    {
+        bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
+        return flights[airline][key].totalPremium;
+    }
 
 
     /**
@@ -228,10 +465,10 @@ contract FlightSuretyData {
     * @dev Fallback function for funding smart contract.
     *
     */
-    // fallback() 
-    //                         external 
-    //                         payable 
-    // {
-    //     fund();
-    // }
+    fallback() 
+                            external 
+                            payable 
+    {
+        fund(msg.sender);
+    }
 }
