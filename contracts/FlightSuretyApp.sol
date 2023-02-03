@@ -143,6 +143,19 @@ contract FlightSuretyApp {
     {
         return flightSuretyData.getAirlineOperationalStatus(airline);
     }
+
+    function getFlightStatus
+                                        (
+                                            address airline,
+                                            string memory flightNumber,
+                                            uint256 timestamps
+                                        )
+                                        public
+                                        view
+                                        returns(bool)
+    {
+        return flightSuretyData.getFlightStatus(airline, flightNumber, timestamps);
+    }
     
     function getRegisteredAirlines
                                     ()

@@ -2,7 +2,8 @@ var Test = require("../config/testConfig.js");
 // var BigNumber = require("bignumber.js");
 contract("Flight Surety Tests", async (accounts) => {
   const payment = web3.utils.toWei("10", "ether");
-
+  const timestamps = Math.floor(Date.now() / 1000);
+  const flightNumber = "FR9876";
   const airline1 = accounts[1];
   const airline2 = accounts[2];
   const airline3 = accounts[3];
@@ -55,6 +56,30 @@ contract("Flight Surety Tests", async (accounts) => {
       isOperational,
       true,
       "An airline that has been funded should be operational"
+    );
+  });
+
+  it(`An opeational airline can register a flight`, async function () {
+    await config.flightSuretyApp.registerAirline(airline2, {
+      from: config.owner,
+    });
+
+    await config.flightSuretyApp.fund({ from: airline2, value: payment });
+
+    await config.flightSuretyApp.registerFlight(flightNumber, timestamps, {
+      from: airline2,
+    });
+
+    const flightStatus = await config.flightSuretyApp.getFlightStatus(
+      airline2,
+      flightNumber,
+      timestamps
+    );
+
+    assert.equal(
+      flightStatus,
+      true,
+      "An airline that has been funded should be able to register a flight"
     );
   });
 
