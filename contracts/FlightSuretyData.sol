@@ -276,6 +276,24 @@ contract FlightSuretyData {
     }
 
    /**
+    * @dev Initial funding for the insurance. Unless there are too many delayed flights
+    *      resulting in insurance payouts, the contract should be self-sustaining
+    *
+    */  
+    function getFunding
+                (
+                    address account     
+                )
+                public
+                view
+                requireIsOperational
+                returns(uint256)
+    {
+        uint256 funds = funding[account];
+        return funds;
+    }
+
+   /**
     * @dev Add a flight to the airline
     *      
     *

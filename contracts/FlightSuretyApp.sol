@@ -193,7 +193,8 @@ contract FlightSuretyApp {
         /* Validations */
         require(airline != address(0), "InvalidAccountAddress");
         // require(flightSuretyData.getAirlineOperationalStatus(msg.sender), "AirlineHasNotBeenFunded");
-        require(!flightSuretyData.getAirlineOperationalStatus(msg.sender), "AirlineAddressAlreadyRegistered");
+        //TODO *** check this ***
+        //require(!flightSuretyData.getAirlineRegistrationStatus(msg.sender), "AirlineAddressAlreadyRegistered");
 
         uint registeredAccounts = flightSuretyData.getRegisteredAirlines();
 
@@ -239,6 +240,20 @@ contract FlightSuretyApp {
         require(!flightSuretyData.getAirlineOperationalStatus(msg.sender), 'Airline was already funded');
 
         flightSuretyData.fund{value:RegistrationFee}(msg.sender);
+    }
+
+   /**
+    * @dev 
+    *
+    */
+    function getFunding
+                      (address account)
+                      public
+                      view
+                      requireIsOperational
+                      returns(uint256)
+    {
+        return flightSuretyData.getFunding(account);
     }      
 
    /**
@@ -461,7 +476,7 @@ abstract contract FlightSuretyData {
     function getRegisteredAirlines() external view virtual returns(uint256);
     function getRegisteredAirlinesAccounts() external view virtual returns(address [] memory);
     function fund(address account) external virtual payable;
-
     function getFlightStatus(address airline, string memory flightNumber, uint256 timestamp) external virtual view returns(bool);
     function registerFlight(address airline, string memory flight, uint256 timestamp) external virtual;
+    function getFunding(address account) external view virtual returns(uint256);
 }
