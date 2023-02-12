@@ -9,6 +9,7 @@ contract("Flight Surety Tests", async (accounts) => {
   const airline3 = accounts[3];
   const airline4 = accounts[4];
   const airline5 = accounts[5];
+  const airline6 = accounts[6];
 
   var config;
   before("setup contract", async () => {
@@ -101,6 +102,13 @@ contract("Flight Surety Tests", async (accounts) => {
     await config.flightSuretyApp.registerAirline(airline5, {
       from: config.owner,
     });
+  });
+
+  it(`An airline can register a flight`, async function () {
+    // await config.flightSuretyApp.registerAirline(airline6, {
+    //   from: config.owner,
+    // });
+    // await config.flightSuretyApp.fund({ from: airline6, value: payment });
   });
 
   // it(`test`, async function () {

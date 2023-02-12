@@ -36,16 +36,21 @@ contract FlightSuretyData {
         uint256 payout;
     }
 
+    struct Voter {
+        address[] airlineVoters;
+        mapping(address => bool) voteResults;
+    }
+
     mapping(address => uint256) private authorizedCaller;
     
     mapping(address => bytes32 []) flightList; 
     mapping(address => mapping(bytes32 => flightInfo)) flights;
     mapping(address => Airline) airlines;
     mapping(address => uint256) funding;
-
+    mapping(address => Voter) voters;
     mapping(address => mapping(bytes32 => address [])) insureeList;   //store the passenger addresses for each flight
     mapping(address => mapping(bytes32 => mapping(address => insureeInfo))) insurees;    //For each flight, it keeps track of premium and payout for each insuree
-
+    mapping(address => uint) voteCount;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -427,6 +432,83 @@ contract FlightSuretyData {
     {
         bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
         return flights[airline][key].totalPremium;
+    }
+
+    /**
+     *  @dev Amount of voters
+    */
+    function getVoter
+                    (
+                        address account
+                    )
+                    external
+                    view
+                    requireIsOperational
+                    isCallerAuthorized
+                    returns(address[] memory)
+    {
+        return voters[account].airlineVoters;
+    }
+
+    /**
+     *  @dev Amount of voters
+    */    
+    function getVotersLength
+                            (
+                                address account
+                            )
+                            external
+                            view
+                            requireIsOperational
+                            isCallerAuthorized
+                            returns(uint256)
+    {
+        return voters[account].airlineVoters.length;
+    }
+
+    /**
+     *  @dev Amount of votes that an airline has
+    */    
+    function getVotesQty
+                            (
+                                address account
+                            )
+                            external
+                            view
+                            requireIsOperational
+                            isCallerAuthorized
+                            returns(uint)
+    {
+        return voteCount[account];
+    }
+
+    /**
+     *  @dev Adds a new vote to the airline
+    */
+    function addVoteToAirline
+                            (
+                                address enteringAirline,
+                                uint newVote
+                            )
+                            external
+                            requireIsOperational
+                            isCallerAuthorized
+    {
+        voteCount[enteringAirline] = voteCount[enteringAirline].add(newVote);
+    }
+
+    /**
+     *  @dev Deletes the vote counter
+    */
+    function deleteVoteCounter
+                            (
+                                address airline
+                            )
+                            external
+                            requireIsOperational
+                            isCallerAuthorized
+    {
+        delete voteCount[airline];
     }
 
 

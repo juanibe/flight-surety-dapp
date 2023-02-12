@@ -7,6 +7,12 @@ pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract FlightSuretyApp {
+
+    /* Event triggered when an existing airlines vots for a new one */
+    event AirlineVoted(address newAirline, address voterAirline, bool ballot);
+    /* Event triggered when a new airline has been registered */
+    event AirlineRegistered(address newAirline);
+
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -117,6 +123,19 @@ contract FlightSuretyApp {
         return flightSuretyData.isOperational();
     }
 
+   /**
+    * @dev This method returns the total number of registered airlines
+    */
+    function totalRegisteredAirlines
+                                    ()
+                                    public
+                                    view
+                                    returns(uint)
+    {
+        return flightSuretyData.getRegisteredAirlines();
+    }
+
+
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -176,7 +195,6 @@ contract FlightSuretyApp {
                                         view
                                         requireIsOperational
     {
-        flightSuretyData.getRegisteredAirlinesAccounts();
     }
 
    /**
@@ -196,7 +214,7 @@ contract FlightSuretyApp {
         //TODO *** check this ***
         //require(!flightSuretyData.getAirlineRegistrationStatus(msg.sender), "AirlineAddressAlreadyRegistered");
 
-        uint registeredAccounts = flightSuretyData.getRegisteredAirlines();
+        uint registeredAccounts = totalRegisteredAirlines();
 
         if(registeredAccounts < threshold)
         {
@@ -208,16 +226,87 @@ contract FlightSuretyApp {
         }
     }
 
+
+
    /**
     * @dev This method gives a vote to an applicant airline, when the total airlines registered 
     *      are more than 5. 
     */
     function voteAirline
-                        ()
+                        (
+                            address airline, 
+                            bool vote
+                        )
                         public
                         requireIsOperational
     {
+        require(totalRegisteredAirlines() > threshold, 'No votation needed. Less than 5 airlines registered');
+        require(!flightSuretyData.getAirlineRegistrationStatus(airline), 'Airline is already registered');
+        require(flightSuretyData.getAirlineOperationalStatus(airline));
 
+        /**
+        * Validation: Avoid duplication of voting
+        */
+        bool isDuplicate = false;
+        uint256 currentVotersNum = flightSuretyData.getVotersLength(airline);
+        uint256 registeredAirlines = totalRegisteredAirlines();
+
+        if(currentVotersNum == 0)
+        {
+            isDuplicate = false;
+        }
+        else
+        {
+            address[] memory currentVoters = flightSuretyData.getVoter(airline);
+            for(uint i = 0; i < currentVotersNum; i++)
+            {
+                if(currentVoters[i] == msg.sender)
+                {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+        }
+
+        require(!isDuplicate, 'Requester has already voted');
+
+        emit AirlineVoted(airline, msg.sender, vote);
+
+        if(vote == true)
+        {
+            flightSuretyData.addVoteToAirline(airline, 1);
+        }
+
+        uint votesQty = flightSuretyData.getVotesQty(airline);
+        uint multipartyThreshold;
+
+        /**
+        * Get the 50% of the already registered airlines
+        */
+        if(registeredAirlines%2 == 1)
+        {
+            multipartyThreshold = registeredAirlines.div(2).add(1);
+        }
+        else
+        {
+            multipartyThreshold = registeredAirlines.div(2);
+        }
+
+        if(votesQty >= multipartyThreshold)
+        {
+            flightSuretyData.registerAirline(airline, false);
+            flightSuretyData.deleteVoteCounter(airline);
+            emit AirlineRegistered(airline);
+        }
+
+        /**
+        * All registered airlines has voted, so close the voting
+        */
+        if(currentVotersNum == registeredAirlines)
+        {
+            flightSuretyData.deleteVoteCounter(airline);
+        }
+        
     }
 
    /**
@@ -330,6 +419,7 @@ contract FlightSuretyApp {
 
     /* Event triggered when a new airlines registers and needs votation to be authorized to enter */
     event VoteRequestEvent(address airline);
+
 
     // Event fired each time an oracle submits a response
     event FlightStatusInfo(address airline, string flight, uint256 timestamp, uint8 status);
@@ -469,7 +559,6 @@ contract FlightSuretyApp {
  */
 abstract contract FlightSuretyData {
     function isOperational() public view virtual returns(bool);
-
     function registerAirline(address airline, bool fundComplete) external virtual;
     function getAirlineOperationalStatus(address airlineAddress) external view virtual returns(bool);
     function getAirlineRegistrationStatus(address airlineAddress) external view virtual returns(bool);
@@ -479,4 +568,9 @@ abstract contract FlightSuretyData {
     function getFlightStatus(address airline, string memory flightNumber, uint256 timestamp) external virtual view returns(bool);
     function registerFlight(address airline, string memory flight, uint256 timestamp) external virtual;
     function getFunding(address account) external view virtual returns(uint256);
+    function getVotersLength(address account) external view virtual returns(uint256);
+    function getVoter(address account) external view virtual returns(address[] memory);
+    function addVoteToAirline(address enteringAirline, uint newVote) external virtual;
+    function getVotesQty(address airline) external virtual view returns(uint);
+    function deleteVoteCounter(address airline) external virtual;
 }
