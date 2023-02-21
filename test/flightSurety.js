@@ -4,12 +4,13 @@ contract("Flight Surety Tests", async (accounts) => {
   const payment = web3.utils.toWei("10", "ether");
   const timestamps = Math.floor(Date.now() / 1000);
   const flightNumber = "FR9876";
-  const airline1 = accounts[1];
+  // const airline1 = accounts[1];
   const airline2 = accounts[2];
   const airline3 = accounts[3];
   const airline4 = accounts[4];
   const airline5 = accounts[5];
   const airline6 = accounts[6];
+  const airline7 = accounts[7];
 
   var config;
   before("setup contract", async () => {
@@ -24,23 +25,23 @@ contract("Flight Surety Tests", async (accounts) => {
   /****************************************************************************************/
 
   it(`Airline can be registered directly if there are less than 5 registered airlines`, async function () {
-    await config.flightSuretyApp.registerAirline(airline1, {
+    await config.flightSuretyApp.registerAirline(airline2, {
       from: config.owner,
     });
 
     const isRegistered1 =
-      await config.flightSuretyApp.getAirlineRegistrationStatus(airline1);
+      await config.flightSuretyApp.getAirlineRegistrationStatus(airline2);
 
     assert.equal(isRegistered1, true, "An airline should be registered");
   });
 
   it(`Airline that has not been funded should not have operational status`, async function () {
-    await config.flightSuretyApp.registerAirline(airline2, {
+    await config.flightSuretyApp.registerAirline(airline3, {
       from: config.owner,
     });
 
     const isOperational =
-      await config.flightSuretyApp.getAirlineOperationalStatus(airline2);
+      await config.flightSuretyApp.getAirlineOperationalStatus(airline3);
 
     assert.equal(
       isOperational,
@@ -50,16 +51,16 @@ contract("Flight Surety Tests", async (accounts) => {
   });
 
   it(`An airline should be operational if has been funded`, async function () {
-    await config.flightSuretyApp.registerAirline(airline3, {
+    await config.flightSuretyApp.registerAirline(airline4, {
       from: config.owner,
     });
 
-    await config.flightSuretyApp.fund({ from: airline3, value: payment });
+    await config.flightSuretyApp.fund({ from: airline4, value: payment });
 
-    const funding = await config.flightSuretyApp.getFunding(airline3);
+    const funding = await config.flightSuretyApp.getFunding(airline4);
 
     const isOperational =
-      await config.flightSuretyApp.getAirlineOperationalStatus(airline3);
+      await config.flightSuretyApp.getAirlineOperationalStatus(airline4);
 
     assert.equal(
       funding.toString(),
@@ -75,18 +76,18 @@ contract("Flight Surety Tests", async (accounts) => {
   });
 
   it(`An opeational airline can register a flight`, async function () {
-    await config.flightSuretyApp.registerAirline(airline4, {
+    await config.flightSuretyApp.registerAirline(airline5, {
       from: config.owner,
     });
 
-    await config.flightSuretyApp.fund({ from: airline4, value: payment });
+    await config.flightSuretyApp.fund({ from: airline5, value: payment });
 
     await config.flightSuretyApp.registerFlight(flightNumber, timestamps, {
-      from: airline4,
+      from: airline5,
     });
 
     const flightStatus = await config.flightSuretyApp.getFlightStatus(
-      airline4,
+      airline5,
       flightNumber,
       timestamps
     );
@@ -98,17 +99,61 @@ contract("Flight Surety Tests", async (accounts) => {
     );
   });
 
-  it(`An airline that has already been registered can not be registered again`, async function () {
-    await config.flightSuretyApp.registerAirline(airline5, {
+  it(`An already registered airline can vote a new entering airline`, async function () {
+    await config.flightSuretyApp.registerAirline(airline6, {
       from: config.owner,
     });
+
+    await config.flightSuretyApp.voteAirline(airline6, true, {
+      from: airline4,
+    });
+
+    const votesQty = await config.flightSuretyApp.getVotesQty(airline6);
+
+    assert.equal(
+      votesQty,
+      1,
+      "Airline should have one vote after another one has voted"
+    );
   });
 
-  it(`An airline can register a flight`, async function () {
-    // await config.flightSuretyApp.registerAirline(airline6, {
-    //   from: config.owner,
-    // });
-    // await config.flightSuretyApp.fund({ from: airline6, value: payment });
+  it(`An airline should be registered after getting the right amount of votes`, async function () {
+    await config.flightSuretyApp.voteAirline(airline6, true, {
+      from: airline2,
+    });
+
+    await config.flightSuretyApp.voteAirline(airline6, true, {
+      from: airline3,
+    });
+
+    const isRegistered =
+      await config.flightSuretyApp.getAirlineRegistrationStatus(airline6);
+
+    assert.equal(isRegistered, true, "An airline should be registered");
+  });
+
+  it(`An airline can not vote twice the same airline`, async function () {
+    await config.flightSuretyApp.registerAirline(airline7, {
+      from: config.owner,
+    });
+    await config.flightSuretyApp.voteAirline(airline7, true, {
+      from: airline2,
+    });
+    try {
+      await config.flightSuretyApp.voteAirline(airline7, true, {
+        from: airline2,
+      });
+    } catch (error) {
+      const err = error.data.stack
+        .toString()
+        .match("Requester has already voted");
+
+      assert.equal(
+        err[0],
+        "Requester has already voted",
+        "An airline can not vote twice the same airline"
+      );
+    }
   });
 
   // it(`test`, async function () {

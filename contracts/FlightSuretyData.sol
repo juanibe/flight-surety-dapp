@@ -163,8 +163,6 @@ contract FlightSuretyData {
 
    /**
     * @dev 
-    *      
-    *
     */
     function getRegisteredAirlines
                                 ()
@@ -283,7 +281,6 @@ contract FlightSuretyData {
    /**
     * @dev Initial funding for the insurance. Unless there are too many delayed flights
     *      resulting in insurance payouts, the contract should be self-sustaining
-    *
     */  
     function getFunding
                 (
@@ -450,6 +447,12 @@ contract FlightSuretyData {
         return voters[account].airlineVoters;
     }
 
+//   struct Voter {
+//         address[] airlineVoters;
+//         mapping(address => bool) voteResults;
+//     }
+//     mapping(address => Voter) voters;
+
     /**
      *  @dev Amount of voters
     */    
@@ -480,6 +483,24 @@ contract FlightSuretyData {
                             returns(uint)
     {
         return voteCount[account];
+    }
+
+    /**
+    *  @dev Adds information of the vote, like the voter, 
+    *       the result and the airline being voted 
+    */
+    function addVoteInformation
+                                (
+                                    address enteringAirline,
+                                    address registeredAirline,
+                                    bool vote
+                                )
+                            external
+                            requireIsOperational
+                            isCallerAuthorized
+    {
+        voters[enteringAirline].airlineVoters.push(registeredAirline);
+        voters[enteringAirline].voteResults[registeredAirline] = vote;
     }
 
     /**

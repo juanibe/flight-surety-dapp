@@ -12,7 +12,6 @@ contract FlightSuretyApp {
     event AirlineVoted(address newAirline, address voterAirline, bool ballot);
     /* Event triggered when a new airline has been registered */
     event AirlineRegistered(address newAirline);
-
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -45,6 +44,7 @@ contract FlightSuretyApp {
         uint256 updatedTimestamp;        
         address airline;
     }
+
     mapping(bytes32 => Flight) private flights;
 
     /********************************************************************************************/
@@ -219,11 +219,41 @@ contract FlightSuretyApp {
         if(registeredAccounts < threshold)
         {
             flightSuretyData.registerAirline(airline, false);
+            emit AirlineRegistered(airline);
         }
         else
         {
             emit VoteRequestEvent(airline);
         }
+    }
+
+
+   /**
+    * @dev Get the amount of votes that an airline has 
+    */
+    function getVotesQty
+                        (
+                            address airline
+                        )
+                        public
+                        view
+                        returns(uint)
+    {
+        return flightSuretyData.getVotesQty(airline);
+    }
+
+   /**
+    * @dev Get the voters af an airline
+    */
+    function getVoters
+                        (
+                            address airline
+                        )
+                        public
+                        view
+                        returns(address[] memory)
+    {
+        return flightSuretyData.getVoter(airline);
     }
 
 
@@ -234,15 +264,14 @@ contract FlightSuretyApp {
     */
     function voteAirline
                         (
-                            address airline, 
+                            address airline,
                             bool vote
                         )
                         public
                         requireIsOperational
     {
-        require(totalRegisteredAirlines() > threshold, 'No votation needed. Less than 5 airlines registered');
+        require(totalRegisteredAirlines() >= threshold, 'No votation needed. Less than 5 airlines registered');
         require(!flightSuretyData.getAirlineRegistrationStatus(airline), 'Airline is already registered');
-        require(flightSuretyData.getAirlineOperationalStatus(airline));
 
         /**
         * Validation: Avoid duplication of voting
@@ -269,7 +298,7 @@ contract FlightSuretyApp {
         }
 
         require(!isDuplicate, 'Requester has already voted');
-
+        flightSuretyData.addVoteInformation(airline, msg.sender, vote);        
         emit AirlineVoted(airline, msg.sender, vote);
 
         if(vote == true)
@@ -310,8 +339,9 @@ contract FlightSuretyApp {
     }
 
    /**
-    * @dev When writing a smart contract, you need to ensure that money is being sent to the contract and out of the contract as well. Payable does this for you, any function in Solidity with the modifier Payable ensures that the function can send and receive Ether
-    *
+    * @dev When writing a smart contract, you need to ensure that money is being sent to the contract and out 
+    *      of the contract as well. Payable does this for you, any function in Solidity with the modifier Payable 
+    *      ensures that the function can send and receive Ether
     */
     function fund
                 ()
@@ -554,9 +584,9 @@ contract FlightSuretyApp {
 }
 
 /**
-    We add a reference to the Data Contract. For this we create an interface.
-    We are telling the app contract how to interact with the data contract
- */
+* @dev We add a reference to the Data Contract. For this we create an interface.
+*      We are telling the app contract how to interact with the data contract
+*/
 abstract contract FlightSuretyData {
     function isOperational() public view virtual returns(bool);
     function registerAirline(address airline, bool fundComplete) external virtual;
@@ -573,4 +603,8 @@ abstract contract FlightSuretyData {
     function addVoteToAirline(address enteringAirline, uint newVote) external virtual;
     function getVotesQty(address airline) external virtual view returns(uint);
     function deleteVoteCounter(address airline) external virtual;
+    function getVoters(address airline) external view virtual returns(address[] memory);
+    function addVoteInformation(address enteringAirline, address registeredAirline, bool vote) external virtual;
 }
+
+
