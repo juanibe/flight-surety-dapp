@@ -31,7 +31,7 @@ contract FlightSuretyData {
         uint256 statusCode;
     }
 
-    struct insureeInfo{
+    struct InsureeInfo{
         uint256 insuranceAmount;
         uint256 payout;
     }
@@ -49,7 +49,7 @@ contract FlightSuretyData {
     mapping(address => uint256) funding;
     mapping(address => Voter) voters;
     mapping(address => mapping(bytes32 => address [])) insureeList;   //store the passenger addresses for each flight
-    mapping(address => mapping(bytes32 => mapping(address => insureeInfo))) insurees;    //For each flight, it keeps track of premium and payout for each insuree
+    mapping(address => mapping(bytes32 => mapping(address => InsureeInfo))) insurees;    //For each flight, it keeps track of premium and payout for each insuree
     mapping(address => uint) voteCount;
 
     /********************************************************************************************/
@@ -404,10 +404,14 @@ contract FlightSuretyData {
                             requireIsOperational
                             isCallerAuthorized
     {
+        // Increment the total premium collected for a flight
         bytes32 key = keccak256(abi.encodePacked(flight, timestamp));
         flights[airline][key].totalPremium = flights[airline][key].totalPremium.add(amount);
+
+        // Add the new insuree to the insuree list 
         insureeList[airline][key].push(insuree);
-        insurees[airline][key][insuree] = insureeInfo({ insuranceAmount: amount, payout: 0 }); 
+        
+        insurees[airline][key][insuree] = InsureeInfo({ insuranceAmount: amount, payout: 0 }); 
     }
 
    /**

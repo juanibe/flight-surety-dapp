@@ -10,8 +10,12 @@ contract FlightSuretyApp {
 
     /* Event triggered when an existing airlines vots for a new one */
     event AirlineVoted(address newAirline, address voterAirline, bool ballot);
+
     /* Event triggered when a new airline has been registered */
     event AirlineRegistered(address newAirline);
+
+    /* Event triggered when a user buys an insurance */
+    event InsurancePurchaseEvent(address airline, string flightNumber, uint timestamps, address passenger, uint amount);
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -34,7 +38,7 @@ contract FlightSuretyApp {
     /* Number of airlines already registered until needed to vote for a new one */
     uint8 threshold = 5;
     
-    FlightSuretyData flightSuretyData;
+    IFlightSuretyData flightSuretyData;
 
     uint256 public constant RegistrationFee = 10 ether;
 
@@ -107,7 +111,7 @@ contract FlightSuretyApp {
     constructor(address dataContract)
     {
         contractOwner = msg.sender;
-        flightSuretyData = FlightSuretyData(dataContract);
+        flightSuretyData = IFlightSuretyData(dataContract);
     }
 
     /********************************************************************************************/
@@ -358,6 +362,7 @@ contract FlightSuretyApp {
         /* Validate that the airline has not been already paid the funding */
         require(!flightSuretyData.getAirlineOperationalStatus(msg.sender), 'Airline was already funded');
 
+        // Send the payment
         flightSuretyData.fund{value:RegistrationFee}(msg.sender);
     }
 
@@ -387,7 +392,7 @@ contract FlightSuretyApp {
                                 external
     {
         /* Validate airline operational status */
-        require(flightSuretyData.getAirlineOperationalStatus(msg.sender));
+        require(flightSuretyData.getAirlineOperationalStatus(msg.sender), 'Airline has not been funded');
         
         /* Validate that the flight has not been already registered */
         require(!flightSuretyData.getFlightStatus(
@@ -413,6 +418,29 @@ contract FlightSuretyApp {
                                 internal
                                 pure
     {
+    }
+    
+    /**
+    * @dev For a user when buys an insurance to a flight
+    */
+    function purchaseInsurance
+                                (
+                                    address airline,
+                                    string memory flightNumber,
+                                    uint timestamps
+                                )
+                                public
+                                payable
+                                requireIsOperational
+    {
+        // Validate that flight exists or is registered
+        require(getFlightStatus(airline, flightNumber, timestamps), 'Flight does not exist or is not registered');
+
+        // Send ETH to data contract
+        flightSuretyData.buy{value: msg.value}(airline, flightNumber, msg.sender, msg.value, timestamps);
+
+        // Emit event
+        emit InsurancePurchaseEvent(airline, flightNumber, timestamps, msg.sender, msg.value);
     }
 
     // Oracle managment
@@ -587,7 +615,7 @@ contract FlightSuretyApp {
 * @dev We add a reference to the Data Contract. For this we create an interface.
 *      We are telling the app contract how to interact with the data contract
 */
-abstract contract FlightSuretyData {
+abstract contract IFlightSuretyData {
     function isOperational() public view virtual returns(bool);
     function registerAirline(address airline, bool fundComplete) external virtual;
     function getAirlineOperationalStatus(address airlineAddress) external view virtual returns(bool);
@@ -605,6 +633,7 @@ abstract contract FlightSuretyData {
     function deleteVoteCounter(address airline) external virtual;
     function getVoters(address airline) external view virtual returns(address[] memory);
     function addVoteInformation(address enteringAirline, address registeredAirline, bool vote) external virtual;
+    function buy(address account, string memory flightNumber, address insuree, uint amount, uint timestamps) external virtual payable;
 }
 
 
