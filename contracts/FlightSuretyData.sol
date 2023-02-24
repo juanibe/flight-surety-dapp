@@ -51,7 +51,8 @@ contract FlightSuretyData {
     mapping(address => mapping(bytes32 => address [])) insureeList;   //store the passenger addresses for each flight
     mapping(address => mapping(bytes32 => mapping(address => InsureeInfo))) insurees;    //For each flight, it keeps track of premium and payout for each insuree
     mapping(address => uint) voteCount;
-
+    mapping(address => uint256) accountCredit;   //keep track of each passenger's account balance
+    
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
@@ -155,7 +156,40 @@ contract FlightSuretyData {
     {
         delete authorizedCaller[contractAddress];
         emit DeAuthorizedContract(contractAddress);
-    } 
+    }
+
+    function getAccountCredit
+                                (
+                                    address account
+                                )
+                                external
+                                view
+                                requireIsOperational
+                                isCallerAuthorized
+                                returns(uint256)
+    {
+        return accountCredit[account];
+    }
+
+    /**
+    * @dev 
+    */
+    function payToInsuree
+                            (
+                                address account,
+                                uint256 amount
+                            )
+                            external
+                            payable
+                            requireIsOperational
+                            isCallerAuthorized
+    {
+        // Before the payment, substract to the credit of the insuree
+        accountCredit[account] = accountCredit[account].sub(amount);
+
+        // Transfer the amount
+        payable(account).transfer(amount);
+    }
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -585,6 +619,23 @@ contract FlightSuretyData {
     // {
     //     return keccak256(abi.encodePacked(airline, flight, timestamp));
     // }
+
+
+    /**
+    * @dev According to solidity version 0.6.0, we have a breaking change. The unnamed function commonly referred 
+    *      to as “fallback function” was split up into a new fallback function that is defined using the fallback 
+    *      keyword and a receive ether function defined using the receive keyword. If present, the receive ether 
+    *      function is called whenever the call data is empty (whether or not ether is received). This function is 
+    *      implicitly payable. The new fallback function is called when no other function matches (if the receive 
+    *      ether function does not exist then this includes calls with empty call data). You can make this function 
+    *      payable or not. If it is not payable then transactions not matching any other function which send value will revert. 
+    *      You should only need to implement the new fallback function if you are following an upgrade or proxy pattern.
+    */
+    receive()
+                external
+                payable
+    {
+    }
 
     /**
     * @dev Fallback function for funding smart contract.

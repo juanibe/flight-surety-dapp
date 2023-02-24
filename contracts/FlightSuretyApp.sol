@@ -16,6 +16,9 @@ contract FlightSuretyApp {
 
     /* Event triggered when a user buys an insurance */
     event InsurancePurchaseEvent(address airline, string flightNumber, uint timestamps, address passenger, uint amount);
+
+    /* Event triggered when a user withdraws */
+    event WithdrawalEvent(address account, uint256 amount);
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -137,6 +140,20 @@ contract FlightSuretyApp {
                                     returns(uint)
     {
         return flightSuretyData.getRegisteredAirlines();
+    }
+
+    /**
+    * @dev
+    */
+    function getAccountCredit
+                                (
+                                    address account
+                                )
+                                public
+                                view
+                                returns(uint256)
+    {
+        return flightSuretyData.getAccountCredit(account);
     }
 
 
@@ -443,6 +460,31 @@ contract FlightSuretyApp {
         emit InsurancePurchaseEvent(airline, flightNumber, timestamps, msg.sender, msg.value);
     }
 
+    /**
+    * @dev 
+    */
+    function withdraw
+                        (
+                            uint256 amount
+                        )
+                        payable
+                        public
+    {
+        // check whether caller is EOA (not contract account)
+        // https://ethereum.stackexchange.com/questions/113962/what-does-msg-sender-tx-origin-actually-do-why
+        require(msg.sender == tx.origin, "Passenger account is needed to make withdrawal");
+        
+        // Check that there is enough balance to withdraw
+        require(getAccountCredit(msg.sender) >= amount, 'Not enought balance in account');
+
+        // Send the payment
+        flightSuretyData.payToInsuree(msg.sender, amount);
+
+        // Emit event
+        emit WithdrawalEvent(msg.sender, amount);
+
+    }
+
     // Oracle managment
 
     // Incremented to add pseudo-randomness at various points
@@ -634,6 +676,6 @@ abstract contract IFlightSuretyData {
     function getVoters(address airline) external view virtual returns(address[] memory);
     function addVoteInformation(address enteringAirline, address registeredAirline, bool vote) external virtual;
     function buy(address account, string memory flightNumber, address insuree, uint amount, uint timestamps) external virtual payable;
+    function getAccountCredit(address account) external virtual view returns(uint256);
+    function payToInsuree(address account, uint256 amount) external payable virtual;
 }
-
-
