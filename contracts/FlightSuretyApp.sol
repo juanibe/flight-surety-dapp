@@ -19,6 +19,9 @@ contract FlightSuretyApp {
 
     /* Event triggered when a user withdraws */
     event WithdrawalEvent(address account, uint256 amount);
+
+    /* Event triggered when an oracle responds */
+    event OracleResponseEvent(address airline, string flight, uint256 timestamp, uint8 status);
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -154,6 +157,23 @@ contract FlightSuretyApp {
                                 returns(uint256)
     {
         return flightSuretyData.getAccountCredit(account);
+    }
+
+    /**
+    * @dev 
+    */
+    function checkOracleIndex
+                                (
+                                    address oracleAcccount,
+                                    uint8 index
+                                )
+                                public
+                                view
+                                returns(bool)
+    {
+        return  oracles[oracleAcccount].indexes[0] == index || 
+                oracles[oracleAcccount].indexes[1] == index ||
+                oracles[oracleAcccount].indexes[2] == index;
     }
 
 
@@ -427,14 +447,36 @@ contract FlightSuretyApp {
     */  
     function processFlightStatus
                                 (
+                                    uint8 index,
                                     address airline,
                                     string memory flight,
                                     uint256 timestamp,
                                     uint8 statusCode
                                 )
                                 internal
-                                pure
+                                
     {
+
+        // Check that the oracle is authorized to respond
+        require(checkOracleIndex(msg.sender, index), 'Oracle is not authorized'); 
+
+        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
+
+        require(oracleResponses[key].isOpen, "Flight or timestamp do not match oracle request");
+
+        oracleResponses[key].responses[statusCode].push(msg.sender);
+
+        emit OracleResponseEvent(airline, flight, timestamp, statusCode);
+
+        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
+
+            emit FlightStatusInfo(airline, flight, timestamp, statusCode);
+
+            // Handle flight status as appropriate
+            processFlightStatus(index, airline, flight, timestamp, statusCode);
+        }
+
+
     }
     
     /**
@@ -586,12 +628,13 @@ contract FlightSuretyApp {
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
         emit OracleReport(airline, flight, timestamp, statusCode);
+        
         if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
 
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
             // Handle flight status as appropriate
-            processFlightStatus(airline, flight, timestamp, statusCode);
+            processFlightStatus(index, airline, flight, timestamp, statusCode);
         }
     }
 
