@@ -536,7 +536,7 @@ contract FlightSuretyApp {
     uint256 public constant REGISTRATION_FEE = 1 ether;
 
     // Number of oracles that must respond for valid status
-    uint256 private constant MIN_RESPONSES = 3;
+    uint256 private constant MIN_RESPONSES = 5;
 
     struct Oracle {
         bool isRegistered;
@@ -650,6 +650,30 @@ contract FlightSuretyApp {
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
+
+    /**
+    * @dev Generate a request for oracles to fetch flight status
+    */
+    function fetchFlightStatus
+                                (
+                                    address airline,
+                                    string memory flight,
+                                    uint256 timestamp
+                                )
+                                public
+    {
+        uint8 index = getRandomIndex(msg.sender);
+
+        // Generate a unique key for storing the request
+        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
+        
+        oracleResponses[key].requester = msg.sender;
+        oracleResponses[key].isOpen = true;
+
+        emit OracleRequest(index, airline, flight, timestamp);
+    }
+
+
 
     // Returns array of three non-duplicating integers from 0-9
     function generateIndexes
