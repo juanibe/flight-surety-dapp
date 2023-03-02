@@ -7,7 +7,7 @@ module.exports = async function (deployer, network, accounts) {
   const data_contract = await FlightSuretyData.deployed();
   await deployer.deploy(FlightSuretyApp, data_contract.address);
   const app_contract = await FlightSuretyApp.deployed();
-  let url = "http://localhost:8545";
+  let url = "http://localhost:7545";
   let config = {
     localhost: {
       url: url,
