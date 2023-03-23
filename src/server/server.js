@@ -1,16 +1,9 @@
-// import FlightSuretyApp from "../../build/contracts/FlightSuretyApp.json";
 const FlightSuretyApp = require("../../build/contracts/FlightSuretyApp.json");
-// import FlightSuretyData from "../../build/contracts/FlightSuretyData.json";
 const FlightSuretyData = require("../../build/contracts/FlightSuretyData.json");
-//import Config from "./config.json";
 const Config = require("./config.json");
-// import Web3 from "web3";
 const Web3 = require("web3");
-// import express from "express";
 const express = require("express");
-// import { Random } from "random-js";
 const { Random } = require("random-js");
-// import { resolve } from "path";
 const { resolve } = require("path");
 
 let config = Config["localhost"];
@@ -20,8 +13,7 @@ let web3 = new Web3(
     config.url.replace("http", "ws").replace("localhost", "127.0.0.1")
   )
 );
-// web3.eth.defaultAccount = web3.eth.accounts[0];
-// console.log(web3.eth.defaultAccount, "default");
+
 let flightSuretyApp = new web3.eth.Contract(
   FlightSuretyApp.abi,
   config.appAddress
@@ -42,7 +34,6 @@ class flight {
     this.flightNumber = flightNumber;
     this.airline = airline;
     this.timestamp = new Date().getTime() + random.integer(10000, 800000);
-    // this.price = web3.utils.toWei((Math.floor(Math.random()*10+1)/10).toString(),"ether");
   }
 }
 

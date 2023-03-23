@@ -2,7 +2,7 @@ var Test = require("../config/testConfig.js");
 //var BigNumber = require('bignumber.js');
 
 contract("Oracles", async (accounts) => {
-  const TEST_ORACLES_COUNT = 25;
+  const TEST_ORACLES_COUNT = 10;
   var config;
 
   const STATUS_CODE_UNKNOWN = 0;

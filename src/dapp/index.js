@@ -10,12 +10,10 @@ let contract;
   contract = new Contract("localhost", () => {
     // Read transaction
     contract.isOperational((error, result) => {
-      console.log(error, result);
       display("Operational Status", "Check if contract is operational", [
         { label: "Operational Status", error: error, value: result },
       ]);
     });
-
     // Read user info
 
     let address = DOM.elid("yourAddress");
@@ -29,13 +27,11 @@ let contract;
     // Connect to server to get flight info
 
     const url = "http://localhost:3000/api/fetchFlights";
-
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", url, false); // false for synchronous request
     xmlHttp.send(null);
     var jsonResponse = JSON.parse(xmlHttp.responseText);
     console.log(jsonResponse);
-
     let main = DOM.elid("flightTable");
 
     //create available flight table
@@ -51,7 +47,7 @@ let contract;
 
       let airlines;
 
-      contract.listRegistredAirline((error, result) => {
+      contract.getRegisteredAirlinesAccounts((error, result) => {
         // console.log(error, result);
         // console.log(jsonResponse[a].airline, result[1]);
 
@@ -220,7 +216,7 @@ function purchaseFlight(error, flight) {
     // pass in airline
     let airlines;
     (async () => {
-      contract.listRegistredAirline((error, result) => {
+      contract.getRegisteredAirlinesAccounts((error, result) => {
         // console.log(error, result);
         // console.log(jsonResponse[a].airline, result[1]);
 
@@ -256,8 +252,9 @@ function purchaseFlight(error, flight) {
       div.classList.add("loader");
       insure.appendChild(div);
       contract.fetchFlightStatus(flight, (error, result) => {
+        console.log("RESULT", result);
         if (error == null) {
-          // console.log(result);
+          console.log(error, "ERROR");
           insure.disabled = true;
         } else {
           alert(error);
@@ -289,6 +286,7 @@ function purchaseFlight(error, flight) {
               // statusNow.style.color = "red";
             } else if (result == 20) {
               statusNow = "Late Airline -- Payout 1.5x ";
+              contract.payToInsuree();
               // statusNow.style.color = "red";
             } else if (result == 10) {
               statusNow = "On Time";

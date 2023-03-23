@@ -191,6 +191,43 @@ contract FlightSuretyData {
         payable(account).transfer(amount);
     }
 
+    /**
+    * @dev
+    */
+    function addFlightStatusCode(address airline,string memory newFlight, uint256 timestamp, uint256 statusCode) external
+        requireIsOperational
+        isCallerAuthorized
+    {
+        bytes32 key = keccak256(abi.encodePacked(newFlight, timestamp));
+        flights[airline][key].statusCode = statusCode;
+    }
+
+    /**
+     *  @dev Credits payouts to insurees
+    */
+    function creditInsurees(address airline, string memory flightNumber, uint256 timestamp) external
+        requireIsOperational
+        isCallerAuthorized 
+    {
+        bytes32 key = keccak256(abi.encodePacked(flightNumber, timestamp));
+        address [] memory creditAccounts = insureeList[airline][key];
+        uint256 accountsLength = creditAccounts.length;
+
+        require(accountsLength > 0, "No insurees for the delayed flight");
+
+        for(uint256 i =0; i < accountsLength; i++){
+            uint256 creditAmount = 0;
+            address account = creditAccounts[i];
+            creditAmount = insurees[airline][key][account].insuranceAmount.mul(3).div(2);
+            
+            // update insureeInfo of flight 
+            insurees[airline][key][account].payout = creditAmount;
+
+            // update individal passenger account credit
+            accountCredit[account] = accountCredit[account].add(creditAmount);
+        }
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -348,7 +385,7 @@ contract FlightSuretyData {
         flightList[airlineAddress].push(key);
         flights[airlineAddress][key].isRegistered = true;
         flights[airlineAddress][key].totalPremium = 0;
-        flights[airlineAddress][key].statusCode = 0;
+        flights[airlineAddress][key].statusCode = 20;
     }
 
    /**
@@ -447,6 +484,8 @@ contract FlightSuretyData {
         
         insurees[airline][key][insuree] = InsureeInfo({ insuranceAmount: amount, payout: 0 }); 
     }
+
+    
 
    /**
     * @dev 
@@ -570,55 +609,6 @@ contract FlightSuretyData {
         delete voteCount[airline];
     }
 
-
-    /**
-     *  @dev Credits payouts to insurees
-    */
-    // function creditInsurees
-    //                             (
-    //                             )
-    //                             external
-    //                             pure
-    // {
-    // }
-
-    /**
-     *  @dev Transfers eligible payout funds to insuree
-     *
-    */
-    // function pay
-    //                         (
-    //                         )
-    //                         external
-    //                         pure
-    // {
-    // }
-
-   /**
-    * @dev Initial funding for the insurance. Unless there are too many delayed flights
-    *      resulting in insurance payouts, the contract should be self-sustaining
-    *
-    */   
-    // function fund
-    //                         (   
-    //                         )
-    //                         public
-    //                         payable
-    // {
-    // }
-
-    // function getFlightKey
-    //                     (
-    //                         address airline,
-    //                         string memory flight,
-    //                         uint256 timestamp
-    //                     )
-    //                     pure
-    //                     internal
-    //                     returns(bytes32) 
-    // {
-    //     return keccak256(abi.encodePacked(airline, flight, timestamp));
-    // }
 
 
     /**

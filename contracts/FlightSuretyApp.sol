@@ -22,6 +22,10 @@ contract FlightSuretyApp {
 
     /* Event triggered when an oracle responds */
     event OracleResponseEvent(address airline, string flight, uint256 timestamp, uint8 status);
+
+    /* Event triggered when a flight was delayed and adds to the insuree the credit */
+    event InsurancePayoutCredit(address airline, string flightNumber, uint256 timestamp);
+
     
     // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
     using SafeMath for uint256; 
@@ -217,15 +221,6 @@ contract FlightSuretyApp {
         return flightSuretyData.getFlightStatus(airline, flightNumber, timestamps);
     }
     
-    function getRegisteredAirlines
-                                    ()
-                                    public
-                                    view
-                                    returns(uint256)
-    {
-        return flightSuretyData.getRegisteredAirlines();
-    }
-
    /**
     * @dev Get the addresses of all the registered airlines
     *
@@ -235,7 +230,9 @@ contract FlightSuretyApp {
                                         public
                                         view
                                         requireIsOperational
+                                        returns(address[] memory)
     {
+        return flightSuretyData.getRegisteredAirlinesAccounts();
     }
 
    /**
@@ -445,38 +442,28 @@ contract FlightSuretyApp {
     * @dev Called after oracle has updated flight status
     *
     */  
-    function processFlightStatus
-                                (
-                                    uint8 index,
-                                    address airline,
-                                    string memory flight,
-                                    uint256 timestamp,
-                                    uint8 statusCode
-                                )
-                                internal
-                                
+   /**
+    * @dev Called after oracle has updated flight status
+    *
+    */  
+    function processFlightStatus(
+        uint8 index,
+        address airline,
+        string memory flight,
+        uint256 timestamp,
+        uint8 statusCode
+    )
+        internal
     {
+        //Ryan added: if the flight is delayed due to airline, automatically process credit to insuree
+        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp)); 
+        oracleResponses[key].isOpen = false;
+        flightSuretyData.addFlightStatusCode(airline, flight, timestamp, statusCode);
 
-        // Check that the oracle is authorized to respond
-        require(checkOracleIndex(msg.sender, index), 'Oracle is not authorized'); 
-
-        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
-
-        require(oracleResponses[key].isOpen, "Flight or timestamp do not match oracle request");
-
-        oracleResponses[key].responses[statusCode].push(msg.sender);
-
-        emit OracleResponseEvent(airline, flight, timestamp, statusCode);
-
-        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
-
-            emit FlightStatusInfo(airline, flight, timestamp, statusCode);
-
-            // Handle flight status as appropriate
-            processFlightStatus(index, airline, flight, timestamp, statusCode);
+        if(statusCode == 20){
+            flightSuretyData.creditInsurees(airline, flight, timestamp);
+            emit InsurancePayoutCredit(airline, flight, timestamp);
         }
-
-
     }
     
     /**
@@ -673,6 +660,24 @@ contract FlightSuretyApp {
         emit OracleRequest(index, airline, flight, timestamp);
     }
 
+    /**
+    * @dev
+    */
+    function getFlightStatusCode
+                                (
+                                    address airline,
+                                    string memory flight,
+                                    uint256 timestamp
+                                )
+                                public 
+                                view
+                                requireIsOperational
+                                returns(uint256)
+    {
+        return flightSuretyData.getFlightStatusCode(airline, flight, timestamp);
+    }
+                                
+
 
 
     // Returns array of three non-duplicating integers from 0-9
@@ -745,4 +750,9 @@ abstract contract IFlightSuretyData {
     function buy(address account, string memory flightNumber, address insuree, uint amount, uint timestamps) external virtual payable;
     function getAccountCredit(address account) external virtual view returns(uint256);
     function payToInsuree(address account, uint256 amount) external payable virtual;
+    function getFlightStatusCode(address airline, string memory flight, uint256 timestamp) external view virtual returns(uint256);
+    function creditInsurees(address airline, string memory flightNumber, uint256 timestamp) external virtual;
+    function addFlightStatusCode(address airline,string memory newFlight, uint256 timestamp, uint256 statusCode) virtual external;
+
+
 }
