@@ -124,12 +124,12 @@ class flight {
 console.log("Registering Orcales && Airlines...");
 
 (function () {
-  var P = ["\\", "|", "/", "-"];
+  var P = ["Awaiting..."];
   var x = 0;
   return setInterval(function () {
     process.stdout.write("\r" + P[x++]);
-    x &= 3;
-  }, 250);
+    x &= 0;
+  }, 1000);
 })();
 
 setTimeout(() => {

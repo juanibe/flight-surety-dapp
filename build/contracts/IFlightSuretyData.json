@@ -19221,7 +19221,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.11",
-  "updatedAt": "2023-03-03T19:18:39.132Z",
+  "updatedAt": "2023-03-23T15:26:00.687Z",
   "devdoc": {
     "details": "We add a reference to the Data Contract. For this we create an interface.      We are telling the app contract how to interact with the data contract",
     "kind": "dev",
